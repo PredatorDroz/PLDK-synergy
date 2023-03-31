@@ -1025,12 +1025,12 @@ import torchvision.transforms as transforms
 import torch
 import io
 
-x_train=torch.load('D:/research_2022/mtt-distillation-main/mtt-distillation-main/logged_files/CIFAR10/project/images_best.pt',map_location=lambda storage, loc: storage.cuda(0))
-y_train=torch.load('D:/research_2022/mtt-distillation-main/mtt-distillation-main/logged_files/CIFAR10/project/labels_best.pt',map_location=lambda storage, loc: storage.cuda(0))
+x_train=torch.load('D:/research_2022/data-distillation/mtt-distillation-main/mtt-distillation-main/logged_files/CIFAR10/project/images_best.pt',map_location=lambda storage, loc: storage.cuda(0))
+y_train=torch.load('D:/research_2022//data-distillation/logged_files/CIFAR10/project/labels_best.pt',map_location=lambda storage, loc: storage.cuda(0))
 
 
 save_dir='logged_files/'
-with open('D:/research_2022/mtt-distillation-main/mtt-distillation-main/logged_files/CIFAR10/project/images_best.pt', 'rb') as f:
+with open('D:/research_2022/data-distillation/mtt-distillation-main/mtt-distillation-main/logged_files/CIFAR10/project/images_best.pt', 'rb') as f:
     buffer = io.BytesIO(f.read())
     print(buffer)
 torch.load(buffer)
