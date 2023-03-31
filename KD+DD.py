@@ -660,191 +660,191 @@ params.cuda = torch.cuda.is_available()
 # if params.cuda: torch.cuda.manual_seed(230)
 
 # Set the logger
-utilse.set_logger(os.path.join(args.model_dir, 'train.log'))
+# utilse.set_logger(os.path.join(args.model_dir, 'train.log'))
 
-# Create the input data pipeline
-logging.info("Loading the datasets...")
+# # Create the input data pipeline
+# logging.info("Loading the datasets...")
 
-# fetch dataloaders, considering full-set vs. sub-set scenarios
-if params.subset_percent < 1.0:
-    train_dl = data_loader.fetch_subset_dataloader('train', params)
-else:
-    train_dl = data_loader.fetch_dataloader('train', params)
+# # fetch dataloaders, considering full-set vs. sub-set scenarios
+# if params.subset_percent < 1.0:
+#     train_dl = data_loader.fetch_subset_dataloader('train', params)
+# else:
+#     train_dl = data_loader.fetch_dataloader('train', params)
     
-import torchvision.transforms as transforms
-import torch
-import io
+# import torchvision.transforms as transforms
+# import torch
+# import io
 
-x_train=torch.load('D:/research_2022/data-distillation/logged_files/CIFAR10/project/images_best.pt',map_location=lambda storage, loc: storage.cuda(0))
-y_train=torch.load('D:/research_2022/data-distillation/logged_files/CIFAR10/project/labels_best.pt',map_location=lambda storage, loc: storage.cuda(0))
-
-
-save_dir='logged_files/'
-with open('D:/research_2022/data-distillation/logged_files/CIFAR10/project/images_best.pt', 'rb') as f:
-    buffer = io.BytesIO(f.read())
-    print(buffer)
-torch.load(buffer)
+# x_train=torch.load('D:/research_2022/data-distillation/logged_files/CIFAR10/project/images_best.pt',map_location=lambda storage, loc: storage.cuda(0))
+# y_train=torch.load('D:/research_2022/data-distillation/logged_files/CIFAR10/project/labels_best.pt',map_location=lambda storage, loc: storage.cuda(0))
 
 
-train_x =x_train
-#train_x = torch.stack([(x) for x in x_gen])
-train_y = y_train
-print(train_x.shape)
-print(train_y.shape)
+# save_dir='logged_files/'
+# with open('D:/research_2022/data-distillation/logged_files/CIFAR10/project/images_best.pt', 'rb') as f:
+#     buffer = io.BytesIO(f.read())
+#     print(buffer)
+# torch.load(buffer)
 
 
-# train_x=train_x[0:60000,:,:,:]
-print(train_x.shape)
-print(train_y.shape)
-full_indices = np.arange(len(train_x))
+# train_x =x_train
+# #train_x = torch.stack([(x) for x in x_gen])
+# train_y = y_train
+# print(train_x.shape)
+# print(train_y.shape)
 
-np.random.shuffle(full_indices)
-tensor_x = train_x[full_indices]
-tensor_y = train_y[full_indices]
 
-full_indices = np.arange(len(train_y))
-np.random.shuffle(full_indices)
-tensor_x = train_x[full_indices]
-tensor_y = train_y[full_indices]
+# # train_x=train_x[0:60000,:,:,:]
+# print(train_x.shape)
+# print(train_y.shape)
+# full_indices = np.arange(len(train_x))
 
-trainset = data.TensorDataset(tensor_x, tensor_y)  # create your datset
-train_dl = data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=0)
+# np.random.shuffle(full_indices)
+# tensor_x = train_x[full_indices]
+# tensor_y = train_y[full_indices]
 
-dev_dl = data_loader.fetch_dataloader('dev', params)
+# full_indices = np.arange(len(train_y))
+# np.random.shuffle(full_indices)
+# tensor_x = train_x[full_indices]
+# tensor_y = train_y[full_indices]
 
-torch.cuda.empty_cache()
+# trainset = data.TensorDataset(tensor_x, tensor_y)  # create your datset
+# train_dl = data.DataLoader(trainset, batch_size=32, shuffle=True, num_workers=0)
 
-logging.info("- done.")
+# dev_dl = data_loader.fetch_dataloader('dev', params)
 
-"""Based on the model_version, determine model/optimizer and KD training mode
-   WideResNet and DenseNet were trained on multi-GPU; need to specify a dummy
-   nn.DataParallel module to correctly load the model parameters
-"""
-if "distill" in params.model_version:
+# torch.cuda.empty_cache()
 
-    # train a 5-layer CNN or a 18-layer ResNet with knowledge distillation
-    if params.model_version == "cnn_distill":
-        print("KD with CNN")
-        #model=alexnets.AlexNet().cuda() if params.cuda else alexnets.AlexNeT(params)
-        #model=densenet.DenseNet(num_classes=10).cuda()
-        #model=resnext50().cuda() if params.cuda else resnext50()
-        model=ConvNet(channel=3, num_classes= 10,net_width=net_width, net_depth=net_depth, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling,im_size=(32,32)).cuda()
-        optimizer = optim.Adam(model.parameters(), lr=params.learning_rate*5)
-        student_checkpoint = 'net_conv_0.64964cc_test_mean.pth'
-        #model.load_state_dict(torch.load(student_checkpoint))
-        #model = resnet101().cuda()
+# logging.info("- done.")
+
+# """Based on the model_version, determine model/optimizer and KD training mode
+#    WideResNet and DenseNet were trained on multi-GPU; need to specify a dummy
+#    nn.DataParallel module to correctly load the model parameters
+# """
+# if "distill" in params.model_version:
+
+#     # train a 5-layer CNN or a 18-layer ResNet with knowledge distillation
+#     if params.model_version == "cnn_distill":
+#         print("KD with CNN")
+#         #model=alexnets.AlexNet().cuda() if params.cuda else alexnets.AlexNeT(params)
+#         #model=densenet.DenseNet(num_classes=10).cuda()
+#         #model=resnext50().cuda() if params.cuda else resnext50()
+#         model=ConvNet(channel=3, num_classes= 10,net_width=net_width, net_depth=net_depth, net_act=net_act, net_norm=net_norm, net_pooling=net_pooling,im_size=(32,32)).cuda()
+#         optimizer = optim.Adam(model.parameters(), lr=params.learning_rate*5)
+#         student_checkpoint = 'net_conv_0.64964cc_test_mean.pth'
+#         #model.load_state_dict(torch.load(student_checkpoint))
+#         #model = resnet101().cuda()
         
-        # fetch loss function and metrics definition in model files
-        loss_fn_kd = net.loss_fn_kd
-        metrics = net.metrics
+#         # fetch loss function and metrics definition in model files
+#         loss_fn_kd = net.loss_fn_kd
+#         metrics = net.metrics
 
-    elif params.model_version == 'resnet18_distill':
-        model = resnet.ResNet18().cuda() if params.cuda else resnet.ResNet18()
-        optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
-                              momentum=0.9, weight_decay=5e-4)
-        # fetch loss function and metrics definition in model files
-        loss_fn_kd =alexnets.loss_fn_kd
-        metrics = resnet.metrics
+#     elif params.model_version == 'resnet18_distill':
+#         model = resnet.ResNet18().cuda() if params.cuda else resnet.ResNet18()
+#         optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
+#                               momentum=0.9, weight_decay=5e-4)
+#         # fetch loss function and metrics definition in model files
+#         loss_fn_kd =alexnets.loss_fn_kd
+#         metrics = resnet.metrics
 
-    """ 
-        Specify the pre-trained teacher models for knowledge distillation
-        Important note: wrn/densenet/resnext/preresnet were pre-trained models using multi-GPU,
-        therefore need to call "nn.DaraParallel" to correctly load the model weights
-        Trying to run on CPU will then trigger errors (too time-consuming anyway)!
-    """
-    if params.teacher == "resnet18":
-        print("ALEX teacher")
-        #teacher_model = alexnets.AlexNet()
-        teacher_model = resnext50()
-        #model=nets.cuda()
-        #teacher_model=nets2
-        #print(teacher_model)
-        teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherR50.pth'
-        teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherRES_DD.pth'
-        #teacher_model = densenet.DenseNet(num_classes=10)
-        #teacher_model = densenet.DenseNet(num_classes=10)
-        #teacher_model = resnet.ResNet18().cuda()
-        #teacher_checkpoint = 'experiments/base_cnn/epoch399'
-        teacher_model = teacher_model.cuda()
-        teacher_model.load_state_dict(torch.load(teacher_checkpoint))
-        teacher_model = teacher_model.cuda()
+#     """ 
+#         Specify the pre-trained teacher models for knowledge distillation
+#         Important note: wrn/densenet/resnext/preresnet were pre-trained models using multi-GPU,
+#         therefore need to call "nn.DaraParallel" to correctly load the model weights
+#         Trying to run on CPU will then trigger errors (too time-consuming anyway)!
+#     """
+#     if params.teacher == "resnet18":
+#         print("ALEX teacher")
+#         #teacher_model = alexnets.AlexNet()
+#         teacher_model = resnext50()
+#         #model=nets.cuda()
+#         #teacher_model=nets2
+#         #print(teacher_model)
+#         teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherR50.pth'
+#         teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherRES_DD.pth'
+#         #teacher_model = densenet.DenseNet(num_classes=10)
+#         #teacher_model = densenet.DenseNet(num_classes=10)
+#         #teacher_model = resnet.ResNet18().cuda()
+#         #teacher_checkpoint = 'experiments/base_cnn/epoch399'
+#         teacher_model = teacher_model.cuda()
+#         teacher_model.load_state_dict(torch.load(teacher_checkpoint))
+#         teacher_model = teacher_model.cuda()
         
-    elif params.teacher == "wrn":
-        teacher_model = wrn.WideResNet(depth=28, num_classes=10, widen_factor=10,
-                                       dropRate=0.3)
-        teacher_checkpoint = 'experiments/base_wrn/best.pth.tar'
-        teacher_model = nn.DataParallel(teacher_model).cuda()
-
-    elif params.teacher == "densenet":
-        teacher_model = densenet.DenseNet(depth=100, growthRate=12)
-        teacher_checkpoint = 'experiments/base_densenet/best.pth.tar'
-        teacher_model = nn.DataParallel(teacher_model).cuda()
-
-    elif params.teacher == "resnext29":
-#         teacher_model = resnext.CifarResNeXt(cardinality=8, depth=29, num_classes=10)
-#         teacher_checkpoint = 'experiments/base_resnext29/best.pth.tar'
+#     elif params.teacher == "wrn":
+#         teacher_model = wrn.WideResNet(depth=28, num_classes=10, widen_factor=10,
+#                                        dropRate=0.3)
+#         teacher_checkpoint = 'experiments/base_wrn/best.pth.tar'
 #         teacher_model = nn.DataParallel(teacher_model).cuda()
-#         teacher_model = alexnets.AlexNet()
-        teacher_model = densenet.DenseNet(num_classes=10)
-        teacher_checkpoint = 'experiments/base_cnn/epoch399'
-        teacher_model = teacher_model.cuda()
 
-    elif params.teacher == "preresnet110":
-        teacher_model = preresnet.PreResNet(depth=110, num_classes=10)
-        teacher_checkpoint = 'experiments/base_preresnet110/best.pth.tar'
-        teacher_model = nn.DataParallel(teacher_model).cuda()
+#     elif params.teacher == "densenet":
+#         teacher_model = densenet.DenseNet(depth=100, growthRate=12)
+#         teacher_checkpoint = 'experiments/base_densenet/best.pth.tar'
+#         teacher_model = nn.DataParallel(teacher_model).cuda()
+
+#     elif params.teacher == "resnext29":
+# #         teacher_model = resnext.CifarResNeXt(cardinality=8, depth=29, num_classes=10)
+# #         teacher_checkpoint = 'experiments/base_resnext29/best.pth.tar'
+# #         teacher_model = nn.DataParallel(teacher_model).cuda()
+# #         teacher_model = alexnets.AlexNet()
+#         teacher_model = densenet.DenseNet(num_classes=10)
+#         teacher_checkpoint = 'experiments/base_cnn/epoch399'
+#         teacher_model = teacher_model.cuda()
+
+#     elif params.teacher == "preresnet110":
+#         teacher_model = preresnet.PreResNet(depth=110, num_classes=10)
+#         teacher_checkpoint = 'experiments/base_preresnet110/best.pth.tar'
+#         teacher_model = nn.DataParallel(teacher_model).cuda()
         
-    elif params.teacher == "AlexNet":
-        teacher_model = AlexNet(num_classes)
-        teacher_checkpoint = 'F:\Other\privacy_reg\results\epoch399.pth.tar'
-        teacher_model = nn.DataParallel(teacher_model).cuda()
+#     elif params.teacher == "AlexNet":
+#         teacher_model = AlexNet(num_classes)
+#         teacher_checkpoint = 'F:\Other\privacy_reg\results\epoch399.pth.tar'
+#         teacher_model = nn.DataParallel(teacher_model).cuda()
         
-    #teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherR50.pth'
-    #utilse.load_checkpoint(teacher_checkpoint, teacher_model)
+#     #teacher_checkpoint = 'D:/research_2022/PyTorch-GAN-master/PyTorch-GAN-master/implementations/cgan/data/model/TeacherR50.pth'
+#     #utilse.load_checkpoint(teacher_checkpoint, teacher_model)
     
 
-    # Train the model with KD
-    logging.info("Experiment - model version: {}".format(params.model_version))
-    logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
-    logging.info("First, loading the teacher model and computing its outputs...")
+#     # Train the model with KD
+#     logging.info("Experiment - model version: {}".format(params.model_version))
+#     logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
+#     logging.info("First, loading the teacher model and computing its outputs...")
     
-    train_and_evaluate_kd(model, teacher_model, train_dl, dev_dl, optimizer, loss_fn_kd,
-                          metrics, params, args.model_dir, args.restore_file)
-#     loss_fn=alexnets.loss_fn
+#     train_and_evaluate_kd(model, teacher_model, train_dl, dev_dl, optimizer, loss_fn_kd,
+#                           metrics, params, args.model_dir, args.restore_file)
+# #     loss_fn=alexnets.loss_fn
+# #     train_and_evaluate(model, train_dl, dev_dl, optimizer, loss_fn, metrics, params,
+# #                        args.model_dir, args.restore_file)
+# else:
+#     if params.model_version == "cnn":
+#         model = net.Net(params).cuda() if params.cuda else net.Net(params)
+#         #optimizer = optim.Adam(model.parameters(), lr=params.learning_rate)
+#         optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9, weight_decay=5e-4)
+#         # fetch loss function and metrics
+#         loss_fn = net.loss_fn
+#         metrics = net.metrics
+
+#     elif params.model_version == "resnet18":
+#         model = resnet.ResNet18().cuda() if params.cuda else resnet.ResNet18()
+#         optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
+#                               momentum=0.9, weight_decay=5e-4)
+#         # fetch loss function and metrics
+#         loss_fn = resnet.loss_fn
+#         metrics = resnet.metrics
+
+
+
+#     # elif params.model_version == "wrn":
+#     #     model = wrn.wrn(depth=28, num_classes=10, widen_factor=10, dropRate=0.3)
+#     #     model = model.cuda() if params.cuda else model
+#     #     optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
+#     #                           momentum=0.9, weight_decay=5e-4)
+#     #     # fetch loss function and metrics
+#     #     loss_fn = wrn.loss_fn
+#     #     metrics = wrn.metrics
+        
+#     # Train the model
+#     logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
 #     train_and_evaluate(model, train_dl, dev_dl, optimizer, loss_fn, metrics, params,
 #                        args.model_dir, args.restore_file)
-else:
-    if params.model_version == "cnn":
-        model = net.Net(params).cuda() if params.cuda else net.Net(params)
-        #optimizer = optim.Adam(model.parameters(), lr=params.learning_rate)
-        optimizer = optim.SGD(model.parameters(), lr=LR, momentum=0.9, weight_decay=5e-4)
-        # fetch loss function and metrics
-        loss_fn = net.loss_fn
-        metrics = net.metrics
-
-    elif params.model_version == "resnet18":
-        model = resnet.ResNet18().cuda() if params.cuda else resnet.ResNet18()
-        optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
-                              momentum=0.9, weight_decay=5e-4)
-        # fetch loss function and metrics
-        loss_fn = resnet.loss_fn
-        metrics = resnet.metrics
-
-
-
-    # elif params.model_version == "wrn":
-    #     model = wrn.wrn(depth=28, num_classes=10, widen_factor=10, dropRate=0.3)
-    #     model = model.cuda() if params.cuda else model
-    #     optimizer = optim.SGD(model.parameters(), lr=params.learning_rate,
-    #                           momentum=0.9, weight_decay=5e-4)
-    #     # fetch loss function and metrics
-    #     loss_fn = wrn.loss_fn
-    #     metrics = wrn.metrics
-        
-    # Train the model
-    logging.info("Starting training for {} epoch(s)".format(params.num_epochs))
-    train_and_evaluate(model, train_dl, dev_dl, optimizer, loss_fn, metrics, params,
-                       args.model_dir, args.restore_file)
 
 '''Simplified version of DLA in PyTorch.
 
@@ -852,7 +852,7 @@ Note this implementation is not identical to the original paper version.
 But it seems works fine.
 
 See dla.py for the original paper version.
-
+(simpleNet)
 Reference:
     Deep Layer Aggregation. https://arxiv.org/abs/1707.06484
 '''
