@@ -2,7 +2,7 @@
 """
 Created on Wed Mar 29 17:41:57 2023
 
-@author: fahim
+@author:
 """
 
 """Main entrance for train/eval with/without KD on CIFAR-10"""
