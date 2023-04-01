@@ -1516,6 +1516,7 @@ def privacy_train(trainloader, model, inference_model, criterion, optimizer, use
 import torchvision.transforms as transforms
 
 import torchvision.datasets as datasets
+import torch.utils.data as data_utils
 
 train_mean = np.array([125.307, 122.950, 113.865])
 train_std = np.array([62.993, 62.089, 66.705])
@@ -1538,6 +1539,8 @@ transform_test = transforms.Compose([
 # TODO check loader for trainloader_private
 trainset_private =datasets.CIFAR10(root='./data-cifar10', train=True,
         download=True, transform=transform_test)
+indices = torch.arange(12500)
+trainloader_private = data_utils.Subset(trainset_private, indices)
 trainloader_private = torch.utils.data.DataLoader(trainset_private, batch_size=params.batch_size, shuffle=True)
 
 
