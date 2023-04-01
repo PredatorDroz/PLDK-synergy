@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Wed Mar 29 17:41:57 2023
+PLDK-knowledge distillation using distilled synthetic data
 
 @author:
 """
