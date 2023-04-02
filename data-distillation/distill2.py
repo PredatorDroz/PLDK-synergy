@@ -60,8 +60,8 @@ def main(args):
 
     wandb.init(sync_tensorboard=False,
                project="DatasetDistillation_mod",
-               job_type="CleanRepo",
-                entity='faisalf1',
+               job_type="Repo",
+                entity='',
                config=args,
                )
 
