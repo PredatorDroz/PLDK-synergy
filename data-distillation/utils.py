@@ -52,33 +52,36 @@ def get_dataset(dataset, data_path, batch_size=1, subset="imagenette", args=None
 
     if dataset == 'CIFAR10':
         #SETUP for mnist 
-        channel = 1
-        im_size = (28, 28)
+        #uncomment when trainining MNIST
+#         channel = 1
+#         im_size = (28, 28)
+#         num_classes = 10
+#         mean = [0.4914, 0.4822, 0.4465]
+#         std = [0.2023, 0.1994, 0.2010]
+#         if args.zca:
+#             transform = transforms.Compose([transforms.ToTensor()])
+#         else:
+#             transform = transforms.Compose([transforms.ToTensor()])
+#         dst_train = datasets.MNIST(data_path, train=True, download=True, transform=transform) # no augmentation
+#         dst_test = datasets.MNIST(data_path, train=False, download=True, transform=transform)
+#         class_names = dst_train.classes
+#         class_map = {x:x for x in range(num_classes)}
+
+        #cifar-10 setup
+
+        channel = 3
+        im_size = (32, 32)
         num_classes = 10
         mean = [0.4914, 0.4822, 0.4465]
         std = [0.2023, 0.1994, 0.2010]
         if args.zca:
             transform = transforms.Compose([transforms.ToTensor()])
         else:
-            transform = transforms.Compose([transforms.ToTensor()])
-        dst_train = datasets.MNIST(data_path, train=True, download=True, transform=transform) # no augmentation
-        dst_test = datasets.MNIST(data_path, train=False, download=True, transform=transform)
+            transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=mean, std=std)])
+        dst_train = datasets.CIFAR10(data_path, train=True, download=True, transform=transform) # no augmentation
+        dst_test = datasets.CIFAR10(data_path, train=False, download=True, transform=transform)
         class_names = dst_train.classes
         class_map = {x:x for x in range(num_classes)}
-
-        # channel = 3
-        # im_size = (32, 32)
-        # num_classes = 10
-        # mean = [0.4914, 0.4822, 0.4465]
-        # std = [0.2023, 0.1994, 0.2010]
-        # if args.zca:
-        #     transform = transforms.Compose([transforms.ToTensor()])
-        # else:
-        #     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize(mean=mean, std=std)])
-        # dst_train = datasets.CIFAR10(data_path, train=True, download=True, transform=transform) # no augmentation
-        # dst_test = datasets.CIFAR10(data_path, train=False, download=True, transform=transform)
-        # class_names = dst_train.classes
-        # class_map = {x:x for x in range(num_classes)}
 
 
     elif dataset == 'Tiny':
